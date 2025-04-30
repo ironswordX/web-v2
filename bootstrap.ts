@@ -59,6 +59,7 @@ export async function BuildApps() {
     exec("git rev-parse HEAD", (error, stdout, stderr) => {
         if (error || stderr) {
             consola.error("Failed to get git commit hash");
+            fs.writeFileSync(path.join(__dirname, "./src/hash.json"), JSON.stringify({ hash: "2b14b5", repository: "terbiumos/web-v2"}, null, 2), "utf-8");
         } else {
             const hash = stdout.trim();
             exec("git remote get-url origin", (remoteError, remoteStdout, remoteStderr) => {
@@ -153,7 +154,7 @@ export async function Updater() {
             consola.error("Failed to get local repository URL");
             return;
         }
-        const repo = `https://raw.githubusercontent.com/${remoteStdout.trim().replace("https://github.com/", "")}/refs/heads/main/package.json` || "https://raw.githubusercontent.com/TerbiumOS/web-react/refs/heads/main/package.json";
+        const repo = `https://raw.githubusercontent.com/${remoteStdout.trim().replace("https://github.com/", "").replace(".git", "")}/refs/heads/main/package.json` || "https://raw.githubusercontent.com/TerbiumOS/web-react/refs/heads/main/package.json";
         try {
             const response = await fetch(repo);
             const ver = (await response.json()).version;
